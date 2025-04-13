@@ -9,9 +9,19 @@ export const articleSchema = z.object({
     .min(1, "スラッグは必須です")
     .max(255, "スラッグは255文字以内で入力してください")
     .regex(/^[a-z0-9-]+$/, "スラッグは小文字英数字とハイフンのみ使用できます"),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+    createdAt: z.union([
+      z.preprocess((val) => (typeof val === "string" ? new Date(val) : val), z.date()),
+      z.string(),
+    ]).optional(),
+    updatedAt: z.union([
+      z.preprocess((val) => (typeof val === "string" ? new Date(val) : val), z.date()),
+      z.string(),
+    ]).optional(),
 });
 
 export const createArticleSchema = articleSchema.omit({ id: true, createdAt: true, updatedAt: true });
 export const updateArticleSchema = articleSchema.partial().omit({ id: true, createdAt: true, updatedAt: true });
+
+export type Article = z.infer<typeof articleSchema>;
+export type CreateArticle = z.infer<typeof createArticleSchema>;
+export type UpdateArticle = z.infer<typeof updateArticleSchema>;

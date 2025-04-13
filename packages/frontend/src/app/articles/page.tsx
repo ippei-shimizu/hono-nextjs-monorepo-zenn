@@ -1,5 +1,3 @@
-
-
 import { getArticles } from "@/services/articles";
 import Link from "next/link";
 
@@ -19,13 +17,17 @@ export default async function Home() {
       </div>
 
       {articles.length === 0 ? (
-        <p className="text-gray-500">記事がありません。新しい記事を作成してください。</p>
+        <p className="text-gray-500">
+          記事がありません。新しい記事を作成してください。
+        </p>
       ) : (
         <div className="grid gap-4">
           {articles.map((article) => (
             <div key={article.id} className="border p-4 rounded shadow">
               <h2 className="text-xl font-semibold">{article.title}</h2>
-              <p className="text-gray-600 mt-2 line-clamp-2">{article.content}</p>
+              <p className="text-gray-600 mt-2 line-clamp-2">
+                {article.content}
+              </p>
               <div className="mt-4 flex gap-2">
                 <Link
                   href={`/articles/${article.slug}`}

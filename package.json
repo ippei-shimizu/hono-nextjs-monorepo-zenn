@@ -7,11 +7,12 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx}\""
   },
   "devDependencies": {
     "@types/node": "^20",
-    "prettier": "^3.5.1",
+    "prettier": "^3.5.3",
     "turbo": "2.4.4",
     "typescript": "^5.8.0"
   },

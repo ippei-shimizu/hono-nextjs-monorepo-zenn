@@ -15,7 +15,7 @@ const app = new Hono<{ Bindings: Env }>()
       exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
       maxAge: 864_000,
       credentials: true,
-    })
+    }),
   )
   // APIルート登録
   .route("/api/", articlesRoutes);

@@ -34,7 +34,7 @@ export const articlesRoutes = new Hono<{ Bindings: Env }>()
           success: false,
           message: "記事が見つかりません",
         },
-        404
+        404,
       );
     }
 
@@ -62,11 +62,14 @@ export const articlesRoutes = new Hono<{ Bindings: Env }>()
           success: false,
           message: "このスラッグは既に使用されています",
         },
-        400
+        400,
       );
     }
 
-    const newArticle = await db.insert(articles).values(articleData).returning();
+    const newArticle = await db
+      .insert(articles)
+      .values(articleData)
+      .returning();
 
     return c.json({
       success: true,
@@ -75,58 +78,62 @@ export const articlesRoutes = new Hono<{ Bindings: Env }>()
   })
 
   // 記事更新
-  .put("/articles/:slug", zValidator("json", updateArticleSchema), async (c) => {
-    const articleData = c.req.valid("json");
-    const slug = c.req.param("slug");
-    const db = getDbClient(c);
+  .put(
+    "/articles/:slug",
+    zValidator("json", updateArticleSchema),
+    async (c) => {
+      const articleData = c.req.valid("json");
+      const slug = c.req.param("slug");
+      const db = getDbClient(c);
 
-    // 更新対象の記事が存在するか確認
-    const existingArticle = await db
-      .select({ id: articles.id })
-      .from(articles)
-      .where(eq(articles.slug, slug))
-      .limit(1);
-
-    if (!existingArticle.length) {
-      return c.json(
-        {
-          success: false,
-          message: "記事が見つかりません",
-        },
-        404
-      );
-    }
-
-    // スラッグが変更される場合、新しいスラッグが既に使用されていないか確認
-    if (articleData.slug && articleData.slug !== slug) {
-      const duplicateSlug = await db
+      // 更新対象の記事が存在するか確認
+      const existingArticle = await db
         .select({ id: articles.id })
         .from(articles)
-        .where(eq(articles.slug, articleData.slug))
+        .where(eq(articles.slug, slug))
         .limit(1);
 
-      if (duplicateSlug.length) {
+      if (!existingArticle.length) {
         return c.json(
           {
             success: false,
-            message: "このスラッグは既に使用されています",
+            message: "記事が見つかりません",
           },
-          400
+          404,
         );
       }
-    }
 
-    const updatedArticle = await db
-      .update(articles)
-      .set({ ...articleData, updatedAt: new Date() })
-      .where(eq(articles.slug, slug))
-      .returning();
+      // スラッグが変更される場合、新しいスラッグが既に使用されていないか確認
+      if (articleData.slug && articleData.slug !== slug) {
+        const duplicateSlug = await db
+          .select({ id: articles.id })
+          .from(articles)
+          .where(eq(articles.slug, articleData.slug))
+          .limit(1);
 
-    return c.json({
-      success: true,
-      data: updatedArticle[0],
-    });
-  })
+        if (duplicateSlug.length) {
+          return c.json(
+            {
+              success: false,
+              message: "このスラッグは既に使用されています",
+            },
+            400,
+          );
+        }
+      }
+
+      const updatedArticle = await db
+        .update(articles)
+        .set({ ...articleData, updatedAt: new Date() })
+        .where(eq(articles.slug, slug))
+        .returning();
+
+      return c.json({
+        success: true,
+        data: updatedArticle[0],
+      });
+    },
+  )
 
   // 記事削除
   .delete("/articles/:slug", async (c) => {
@@ -144,7 +151,7 @@ export const articlesRoutes = new Hono<{ Bindings: Env }>()
           success: false,
           message: "記事が見つかりません",
         },
-        404
+        404,
       );
     }
 

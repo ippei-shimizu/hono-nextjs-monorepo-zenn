@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getArticle, updateArticle } from "@/services/articles";
 
-export default function EditArticle({ params }: { params: { slug: string } }) {
+export default function EditArticle({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -18,7 +18,7 @@ export default function EditArticle({ params }: { params: { slug: string } }) {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const { success, data, message } = await getArticle(params.slug);
+        const { success, data, message } = await getArticle((await params).slug);
         if (success && data) {
           setTitle(data.title);
           setContent(data.content);
@@ -36,7 +36,7 @@ export default function EditArticle({ params }: { params: { slug: string } }) {
     };
 
     fetchArticle();
-  }, [params.slug]);
+  }, [params]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

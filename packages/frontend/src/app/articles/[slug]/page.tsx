@@ -5,9 +5,9 @@ import Link from "next/link";
 export default async function ArticleDetail({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { success, data: article } = await getArticle(params.slug);
+  const { success, data: article } = await getArticle((await params).slug);
 
   if (!success || !article) {
     return (
